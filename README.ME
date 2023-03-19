@@ -1,0 +1,48 @@
+Applicação desafio:
+
+Criar um sistema simples que possua uma tela de autenticação com usuário e senha. 
+Ao logar no sistema apresentar uma página com uma informação: "Logado com sucesso". Nessa tela deverá ter também um botão para deslogar. 
+O sistema deverá ter uma sessão de 60 segundos.
+O frontend deverá ser desacoplado do backend.
+
+
+
+TESTE:
+
+
+	*AuthController
+
+		curl -X POST http://localhost:8080/login -H "Content-Type: application/json" -d "{\"username\": \"username\",\"password\": \"password\"}"
+		curl -H "Authorization: Bearer your_token" http://localhost:8080/api/protected/endpoint
+	
+	* SessionController
+	
+		To test this controller using the command prompt on Windows, you can use a tool like curl or httpie to make HTTP requests to the server. Here's an example using httpie:
+		
+		Open the command prompt
+		Install httpie if it's not already installed. You can do this by running the following command:
+		pip install httpie
+		
+		Start your server
+		Run the following command to get the session info:
+		bash
+		
+		http GET localhost:8080/session
+		This will make a GET request to the specified endpoint and return the session info. You can also use curl to achieve the same result, for example:
+		
+		bash
+		curl -X GET localhost:8080/session
+	
+
+
+
+
+______
+
+Explicação Geral:
+
+Utilizando o Redis como cache em memória:
+O Redis é um banco de dados em memória de código aberto, que pode ser utilizado como armazenamento em cache, banco de dados chave-valor, broker de mensagens e outras aplicações. 
+Ele é muito rápido e eficiente, e é bastante utilizado em aplicações que precisam de alta disponibilidade e baixa latência, como sistemas de jogos, aplicativos de chat em tempo real,
+ sistemas de análise de dados em tempo real, entre outros. No contexto da aplicação em questão, o Redis está sendo utilizado como um cache para armazenar tokens JWT e verificar se um token é válido ou não.
+ 
