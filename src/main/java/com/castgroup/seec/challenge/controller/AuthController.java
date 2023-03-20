@@ -2,6 +2,8 @@ package com.castgroup.seec.challenge.controller;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +46,8 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticate(@RequestBody AuthRequest authRequest) {
 
-		// setting default user its necessary in the first access to H2 in memory database
+		// setting default user its necessary in the first access to H2 in memory
+		// database
 		Collection<User> colUser = userDatailService.findAll();
 		if (colUser == null || colUser.isEmpty()) {
 			User user = new User();
@@ -63,5 +67,49 @@ public class AuthController {
 		AuthResponse authResponse = new AuthResponse(jwt);
 
 		return ResponseEntity.ok(authResponse);
+	}
+
+	@PostMapping("/validatetoken")
+	public ResponseEntity<?> validateToken(HttpServletRequest request) {
+
+		final String authorizationHeader = request.getHeader("Authorization");
+
+		String token = null;
+		String username = null;
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			token = authorizationHeader.substring(7);
+			username = jwtUtil.extractUsername(token);
+		}
+
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = this.userDatailService.loadUserByUsername(username);
+
+			if (jwtUtil.validateToken(token, userDetails)) {
+				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				usernamePasswordAuthenticationToken
+						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			}
+		}
+
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			// token is valid
+			return ResponseEntity.ok("{validate:true}");
+		} else {
+			// token is invalid
+			return ResponseEntity.badRequest().build();
+		}
+
+	}
+
+	@PostMapping("/logoutinvalidatetoken")
+	public ResponseEntity<?> logout(HttpServletRequest request) {
+		String authorizationHeader = request.getHeader("Authorization");
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			String token = authorizationHeader.substring(7);
+			jwtUtil.invalidateToken(token);
+		}
+		return ResponseEntity.ok("{logout:true}");
 	}
 }

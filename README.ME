@@ -1,19 +1,20 @@
 Applicação desafio:
 
 Criar um sistema simples que possua uma tela de autenticação com usuário e senha. 
-Ao logar no sistema apresentar uma página com uma informação: "Logado com sucesso". Nessa tela deverá ter também um botão para deslogar. 
+Ao logar no sistema apresentar uma página com uma informação: "Logado com sucesso". 
+Nessa tela deverá ter também um botão para deslogar. 
 O sistema deverá ter uma sessão de 60 segundos.
 O frontend deverá ser desacoplado do backend.
 
 
-
 TESTE:
-
 
 	*AuthController
 
 		curl -X POST http://localhost:8080/login -H "Content-Type: application/json" -d "{\"username\": \"username\",\"password\": \"password\"}"
 		curl -H "Authorization: Bearer your_token" http://localhost:8080/api/protected/endpoint
+		curl -X POST http://localhost:8080/validatetoken -H "Content-Type: application/json" -d "{\"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTY3OTI1OTE1NCwiZXhwIjoxNjc5MjYyNzU0fQ.N147w2uT6V8RgS5teqjDWXFRbP-HHzej0AyjuwTr488\"}"
+		curl -X POST http://localhost:8080/logout -H "Content-Type: application/json" -d "{\"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTY3OTI1OTE1NCwiZXhwIjoxNjc5MjYyNzU0fQ.N147w2uT6V8RgS5teqjDWXFRbP-HHzej0AyjuwTr488\"}"
 	
 	* SessionController
 	
@@ -33,10 +34,6 @@ TESTE:
 		bash
 		curl -X GET localhost:8080/session
 	
-
-
-
-
 ______
 
 Explicação Geral:

@@ -69,4 +69,15 @@ public class JwtUtil {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+    
+    public void invalidateToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            claims.put("invalidated", true);
+            SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
+            Jwts.builder().setClaims(claims).signWith(key, SignatureAlgorithm.HS256).compact();
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while invalidating JWT token: " + e.getMessage());
+        }
+    }    
 }

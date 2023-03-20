@@ -3,6 +3,7 @@ package com.castgroup.seec.challenge.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -23,6 +24,7 @@ import com.castgroup.seec.challenge.service.UserDetailService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Order(101) // change the order to 101
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailService userDetailService;
@@ -42,7 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/h2-console/**").permitAll()
             .antMatchers("/swagger-ui/**").permitAll()
             .antMatchers("/user/**").permitAll()
-            .antMatchers("/api-docs/**").permitAll()            
+            .antMatchers("/api-docs/**").permitAll()
+            .antMatchers("/validatetoken").permitAll()
+            .antMatchers("/logoutinvalidatetoken").permitAll()
             .anyRequest().authenticated()
             .and()            
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)            
